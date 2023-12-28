@@ -1,30 +1,72 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Google Maps Example</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-UVGsBVD9EHNxOG4tKk8emRjQ50c8MmU&callback=initMap" async defer></script>
-    <script>
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: -34.397, lng: 150.644},
-          zoom: 8
-        });
+<head>
+  <title>Follow User Location Marker</title>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
 
-        // Replace 'f37f8b353c8cb73d' with your actual map ID
-        var layer = new google.maps.ImageMapType({
-          getTileUrl: function(coord, zoom) {
-            return 'https://mt0.google.com/vt/lyrs=m&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom + '&hl=en';
-          },
-          tileSize: new google.maps.Size(256, 256),
-          maxZoom: 20,
-          name: 'MyCustomMap'
-        });
+<div id="map"></div>
 
-        map.overlayMapTypes.insertAt(0, layer);
-      }
-    </script>
-  </head>
-  <body>
-    <div id="map" style="height: 400px; width: 100%;"></div>
-  </body>
+<script>
+  // Replace 'YOUR_API_KEY' with your actual Google Maps API key
+  const apiKey = 'XXXXXX';
+
+  function initMap() {
+    // Create a new map centered at a default location
+    const map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 14,
+      center: { lat: 37.7749, lng: -122.4194 } // Default location (San Francisco)
+    });
+
+    // Create a marker with an initial position
+    const marker = new google.maps.Marker({
+      map: map,
+      draggable: true, // Allow the user to drag the marker
+      animation: google.maps.Animation.DROP
+    });
+
+    // Try HTML5 geolocation to get the user's location
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(
+        (position) => {
+          const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          // Set the marker position to the user's location
+          marker.setPosition(userLocation);
+
+          // Center the map on the user's location
+          map.setCenter(userLocation);
+        },
+        (error) => {
+          console.error('Error getting user location:', error);
+        }
+      );
+    } else {
+      // Browser doesn't support Geolocation
+      console.error('Geolocation is not supported by this browser.');
+    }
+  }
+
+  // Load the Google Maps API script with the callback function
+  function loadScript() {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
+  // Load the Google Maps API script
+  window.onload = loadScript;
+</script>
+
+</body>
 </html>
