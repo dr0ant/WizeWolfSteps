@@ -13,7 +13,8 @@
 - [ ] MVP interface of map
     - [x] connection to googlemap API + printing frontend 
     - [x] adding markers + content 
-    - [ ] set current place to actual geolocalisation
+    - [x] set current place to actual geolocalisation
+    - [ ] rewrite the all stuff in python so I understand the backend lol
     - [ ] profile page 
 
 ![current dev ](Assets/413958270_279362005122746_2687020570833499814_n.png)
