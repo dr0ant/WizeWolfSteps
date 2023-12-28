@@ -12,23 +12,17 @@
 <div id="map"></div>
 
 <script>
-    // Load the JSON data
-    fetch('/api/get_keys')
-        .then(response => response.json())
-        .then(data => {
-            // Create the Google Maps API link using the JSON data
-            const mapsApiKey = data.Maps_API_Key;
-            const mapsIds = data.Maps_ids;
-            const googleMapsApiLink = `https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&map_ids=${mapsIds}&callback=initMap`;
+    // Create the Google Maps API link using the passed API keys
+    const mapsApiKey = "{{ maps_api_key }}";
+    const mapsIds = "{{ maps_ids }}";
+    const googleMapsApiLink = `https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&map_ids=${mapsIds}&callback=initMap`;
 
-            // Create a script element and set its source to the dynamically generated link
-            const scriptElement = document.createElement('script');
-            scriptElement.src = googleMapsApiLink;
+    // Create a script element and set its source to the dynamically generated link
+    const scriptElement = document.createElement('script');
+    scriptElement.src = googleMapsApiLink;
 
-            // Append the script element to the body
-            document.body.appendChild(scriptElement);
-        })
-        .catch(error => console.error('Error loading API keys:', error));
+    // Append the script element to the body
+    document.body.appendChild(scriptElement);
 </script>
 
 </body>
