@@ -1,10 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple Map</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    <title>Dynamic Map</title>
     <script>
-      function initMap() {
+      // Fetch API key from JSON file
+      fetch('/ApiKeys/GoogleAPIKEY.json')
+        .then(response => response.json())
+        .then(data => {
+          // Include Google Maps API script with the dynamically obtained API key
+          var script = document.createElement('script');
+          script.src = 'https://maps.googleapis.com/maps/api/js?key=' + data.Maps_API_Key + '&callback=initMap';
+          script.async = true;
+          script.defer = true;
+          document.head.appendChild(script);
+
+          // Use the API key to initialize the map
+          initMap(data.Maps_API_Key);
+        })
+        .catch(error => console.error('Error fetching API key:', error));
+
+      function initMap(apiKey) {
         var map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: -34.397, lng: 150.644},
           zoom: 8
