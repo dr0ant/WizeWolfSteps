@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps Example</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-UVGsBVD9EHNxOG4tKk8emRjQ50c8MmU&callback=initMap" async defer></script>
+    <script>
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 8
+        });
+
+        // Replace 'f37f8b353c8cb73d' with your actual map ID
+        var layer = new google.maps.ImageMapType({
+          getTileUrl: function(coord, zoom) {
+            return 'https://mt0.google.com/vt/lyrs=m&x=' + coord.x + '&y=' + coord.y + '&z=' + zoom + '&hl=en';
+          },
+          tileSize: new google.maps.Size(256, 256),
+          maxZoom: 20,
+          name: 'MyCustomMap'
+        });
+
+        map.overlayMapTypes.insertAt(0, layer);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="map" style="height: 400px; width: 100%;"></div>
+  </body>
+</html>
