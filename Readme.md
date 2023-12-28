@@ -11,8 +11,14 @@
 ##### TO DO 
 
 - [ ] MVP interface of map
-    - map + geolocalisation
-    - profile
+    - [x] connection to googlemap API + printing frontend 
+    - [x] adding markers + content 
+    - [ ] set current place to actual geolocalisation
+    - [ ]profile page 
+
+![current dev ](Assets/413958270_279362005122746_2687020570833499814_n.png)
+
+
 - [ ]  Database to store content en geolocalisation
     - choosing type of db
     - estimation of cost
