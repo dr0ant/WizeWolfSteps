@@ -1,4 +1,5 @@
 import json
+import time
 from flask import Flask, render_template, jsonify,request
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -83,13 +84,19 @@ def create_marker():
 
     # Insert data into MongoDB
     marker_data = {
-        'latitude': float(latitude),
-        'longitude': float(longitude),
-        'image_path': image_data,
-        'sound_path': sound_data,
-        'name': name,
-        'text': text,
-        'user_id': user_id
+        'id':   str(time.time_ns()),
+        'creation_datetime': str(datetime.now()),
+        'title': name,
+        'label': text,
+        'icon': 'static/Assets/Step_white.png',
+        'image_base64': image_data,
+        'sound_base64': sound_data,
+        'user_id': user_id,
+        'position':{
+             'latitude': float(latitude),
+             'longitude': float(longitude)
+
+        }
     }
 
     markers_collection.insert_one(marker_data)

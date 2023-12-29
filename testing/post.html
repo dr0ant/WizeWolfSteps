@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Styles for the popup */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+    
+        .popup-container {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 400px; /* Optional: Limit the maximum width */
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center; /* Center text within the container */
+        }
+    
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+    
+        .popup-header div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    
+        .popup-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+    
+        .popup-content img {
+            max-width: 50px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+    
+        .popup-footer {
+            margin-top: 10px;
+        }
+    </style>
+    
+</head>
+<body>
+
+<div class="popup-container">
+    <div class="popup-header">
+        <div>
+            <!-- Title -->
+            <strong id="popup-title"></strong>
+        </div>
+        <div>
+            <!-- Datetime -->
+            <span id="popup-datetime"></span>
+        </div>
+    </div>
+    <div class="popup-footer">
+        <!-- User ID -->
+        <span id="popup-user-id"></span>
+    </div>
+    <div class="popup-content">
+        <!-- Image -->
+        <img src="/static/Assets/baka.png"   alt="compas image">
+        <!-- Label -->
+        <p id="popup-label"></p>
+        <!-- Sound -->
+        <audio id="popup-sound" controls>
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    <div class="popup-footer">
+        <!-- Location -->
+        <span id="popup-location"></span>
+        <img src="/static/Assets/compass-symbol.png" width="70px"  alt="compas image">
+    </div>
+</div>
+
+<script>
+    // Function to open the popup and fill it with data
+    function openPopup(data) {
+        document.getElementById('popup-title').innerText = data.title;
+        document.getElementById('popup-datetime').innerText = data.creation_datetime;
+        document.getElementById('popup-user-id').innerText = "User ID: " + data.user_id;
+        document.getElementById('popup-image').src = "data:image/png;base64," + data.image_base64;
+        document.getElementById('popup-sound').src = "data:audio/mp3;base64," + data.sound_base64;
+        document.getElementById('popup-label').innerText = data.label;
+        document.getElementById('popup-location').innerText = "Location: " + data.position.latitude + ", " + data.position.longitude;
+
+        // Display the popup
+        document.querySelector('.popup-container').style.display = 'block';
+    }
+
+    // Function to close the popup
+    function closePopup() {
+        // Hide the popup
+        document.querySelector('.popup-container').style.display = 'none';
+    }
+
+    // Sample JSON data
+    var jsonData = {
+        "id": "17038897693085490",
+        "creation_datetime": "2023-12-29 23:42:49.308557",
+        "title": "test",
+        "label": "balbalbalalahdzisuq",
+        "icon": "static/Assets/Step_white.png",
+        "image_base64": "SOMEI MAGE",
+        "sound_base64": "SOME SOUND",
+        "user_id": "dr0ant",
+        "position": {
+            "latitude": 47.29221277730961,
+            "longitude": 0.7235444502270827
+        }
+    };
+
+    // Open the popup with sample data
+    openPopup(jsonData);
+</script>
+
+</body>
+</html>

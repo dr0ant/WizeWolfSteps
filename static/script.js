@@ -190,9 +190,9 @@ function initMap() {
                         Longitude: <input type="text" name="longitude" id="longitude" value="${position.lng()}" required><br>
                         Image (file): <input type="file" name="image" accept="image/*" ><br>
                         Sound (file): <input type="file" name="sound" accept="audio/*" ><br>
-                        Name: <textarea name="text" rows="4"></textarea><br>
+                        Name: <textarea name="name" rows="4"></textarea><br>
                         Text: <textarea name="text" rows="4"></textarea><br>
-                        User ID: <input type="text" name="user_id" value="666" required><br>
+                        User ID: <input type="text" name="user_id" value="dr0ant" required><br>
                         <button type="submit">Create Step</button>
                     </form>
                 </div>

@@ -1,4 +1,5 @@
 import json
+import time
 import base64
 import geocoder
 from flask import Flask, render_template, jsonify, request
@@ -154,7 +155,17 @@ def get_user_location():
     
 
 
-print(get_user_location())
+
+# Using time.time() for seconds precision
+timestamp_seconds = int(time.time())
+print("Timestamp (seconds):", timestamp_seconds)
+
+# Using time.time_ns() for nanoseconds precision
+timestamp_ns = time.time_ns()
+print("Timestamp (nanoseconds):", timestamp_ns)
+
+
+#print(get_user_location())
 
 # Test the function separately
 #if __name__ == '__main__':
