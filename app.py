@@ -21,7 +21,6 @@ markers_collection = db['Markers']
 
 
 # Marker Creation
-
 @app.route('/marker_creation', methods=['POST'])
 def marker_creation():
     try:

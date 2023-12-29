@@ -15,7 +15,8 @@
     - [x] adding markers + content 
     - [x] set current place to actual geolocalisation
     - [x] rewrite the all stuff in python so I understand the backend lol
-    - [ ] create a frontend interface for markers
+    - [x] create a frontend interface for markers
+    - [x] center the map to the current user localisation
     - [ ] python backend to create the marker based on your localisation (200m around max)
 
 
