@@ -14,7 +14,7 @@
     - [x] connection to googlemap API + printing frontend 
     - [x] adding markers + content 
     - [x] set current place to actual geolocalisation
-    - [ ] rewrite the all stuff in python so I understand the backend lol
+    - [x] rewrite the all stuff in python so I understand the backend lol
     - [ ] profile page 
     - [ ] Wolf pixelArt creator --> to create your wolf avatar
     - [ ] Customization for your Wolf Steps
@@ -22,11 +22,12 @@
 ![current dev ](Assets/413958270_279362005122746_2687020570833499814_n.png)
 
 
-- [ ]  Database to store content en geolocalisation
+- [x]  Database to store content en geolocalisation
     - [x] choosing type of db --> MongoDB
-    - [ ] creating Marker creator in Python that stores the Markers in MongoDB
-- [ ]  Connecting the frontend and the backend
+    - [x] creating Marker creator in Python that stores the Markers in MongoDB
+- [x]  Connecting the frontend and the backend
 
+![new state of dev 29012023](Assets/412681018_902724471510530_6358729437072687604_n.png)
 
 
 
