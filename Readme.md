@@ -28,7 +28,7 @@
     - [ ] Wolf pixelArt creator --> to create your wolf avatar
     - [ ] Customization for your Wolf Steps
 
-![current dev ](Assets/413958270_279362005122746_2687020570833499814_n.png)
+![current dev ](static/Assets/413958270_279362005122746_2687020570833499814_n.png)
 
 
 - [x]  Database to store content en geolocalisation
@@ -36,7 +36,7 @@
     - [x] creating Marker creator in Python that stores the Markers in MongoDB
 - [x]  Connecting the frontend and the backend
 
-![new state of dev 29012023](Assets/412681018_902724471510530_6358729437072687604_n.png)
+![new state of dev 29012023](static/Assets/412681018_902724471510530_6358729437072687604_n.png)
 
 
 
