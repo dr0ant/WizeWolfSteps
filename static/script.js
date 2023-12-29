@@ -73,17 +73,9 @@ function initMap() {
         );
     } else {
         // Fallback to a default location if geolocation is not supported
-        const defaultLocation = { lat: 47.291920, lng: 0.723910 };
+        const defaultLocation = { lat: 41.291920, lng: 0.823910 };
         map.setCenter(defaultLocation);
     }
-
-
-    // Add a click event listener to the map
-    map.addListener('click', function (event) {
-        showFormAtPosition(event.latLng);
-    });
-
-
 
     // Fetch markers from the server
     fetch('/get_markers')
@@ -124,47 +116,4 @@ function initMap() {
         })
         .catch(error => console.error('Error fetching markers:', error));
 
-}
-
-function submitForm(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    // Get form data
-    const formData = new FormData(event.target);
-
-    // Send form data to the server for marker creation
-    fetch('/marker_creation', {
-       method: 'POST',
-       body: formData,
-    })
-       .then(response => response.json())
-       .then(data => {
-          // Check if marker creation was successful
-          if (data.status === 'success') {
-             // Clear the form
-             event.target.reset();
-
-             // Fetch and update markers on the map
-             fetchMarkers();
-          } else {
-             // Handle error
-             console.error('Error creating marker:', data.message);
-          }
-       })
-       .catch(error => console.error('Error:', error));
- }
-
- function showFormAtPosition(latLng) {
-    const formBox = document.getElementById('formBox');
-    formBox.style.display = 'block';
-
-    // Set the form position based on the clicked position
-    const formTop = latLng.lat();
-    const formLeft = latLng.lng();
-    formBox.style.top = formTop + 'px';
-    formBox.style.left = formLeft + 'px';
-
-    // Fill latitude and longitude fields in the form
-    document.getElementById('markerForm').elements['latitude'].value = formTop;
-    document.getElementById('markerForm').elements['longitude'].value = formLeft;
 }

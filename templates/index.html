@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,21 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WolfSteps</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Style for the form overlay */
+        .form-overlay {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
 
 <h1>Wolf Steps, Walking in our steps</h1>
 <div id="map"></div>
-<!-- Add this div to your HTML -->
-<div id="formBox" class="form-box" style="display: none;">
-    <form id="markerForm" action="/marker_creation" method="post">
-        Latitude: <input type="text" name="latitude" readonly><br>
-        Longitude: <input type="text" name="longitude" readonly><br>
-        Name: <input type="text" name="name" required><br>
-        <button type="button" onclick="submitForm()">Create Marker</button>
-    </form>
-</div>
-
 
 <script>
     // Load the JSON data using AJAX
@@ -40,6 +44,7 @@
         })
         .catch(error => console.error('Error loading API keys:', error));
 </script>
+
 <!-- Move your script to the end of the body or use an event listener -->
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 

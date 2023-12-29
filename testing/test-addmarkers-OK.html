@@ -29,20 +29,10 @@
     }
 
     function addMarker(map, lat, lng) {
-        const marker = new google.maps.Marker({
+        new google.maps.Marker({
             position: { lat, lng },
             map: map,
             title: 'New Marker'
-        });
-
-        // Create an infowindow (popup) for the marker
-        const infowindow = new google.maps.InfoWindow({
-            content: '<div><strong>Marker Information</strong><br><input type="text" id="infoInput" placeholder="Enter information"><br><button onclick="saveMarkerInfo()">Submit</button></div>'
-        });
-
-        // Open the infowindow when the marker is clicked
-        marker.addListener('click', () => {
-            infowindow.open(map, marker);
         });
     }
 
@@ -64,14 +54,6 @@
         map.addListener('click', (event) => {
             addMarker(map, event.latLng.lat(), event.latLng.lng());
         });
-    }
-
-    // Function to save marker information (you need to implement the backend logic for MongoDB)
-    function saveMarkerInfo() {
-        const infoInput = document.getElementById('infoInput').value;
-        // Here, you would typically send the information to your backend (Node.js with Express and Mongoose) for saving to MongoDB
-        // Example: Use fetch or another method to send a POST request to your backend API
-        console.log('Marker information to be saved:', infoInput);
     }
 
     // Initialize the map
