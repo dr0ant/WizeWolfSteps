@@ -1,83 +1,86 @@
+
 function initMap() {
-    // Create a map centered on the user's location
-    const map = new google.maps.Map(document.getElementById('map'), {
+    const mapOptions = {
         zoom: 20,
         mapId: 'f37f8b353c8cb73d',
         mapTypeControl: false,
         fullscreenControl: false,
         streetViewControl: false
-    });
+    };
+    
+    const defaultLocation = { lat: 48.291920, lng: 0.623910 };
+    const fallbackDefaultLocation = { lat: 41.291920, lng: 0.823910 };
 
-    let userMarker; // Declare user marker variable outside the scope
+    const map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    let userMarker;
 
-    // Try to get the user's location and heading
-    if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(
-            (position) => {
-                const userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
+    function handleUserLocation(position) {
+        const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
 
-                // Set the map center to the user's location
-                map.setCenter(userLocation);
+        map.setCenter(userLocation);
 
-                // Create a marker for the user's location if it doesn't exist
-                if (!userMarker) {
-                    userMarker = new google.maps.Marker({
-                        position: userLocation,
-                        map,
-                        title: 'Your Location',
-                        animation: google.maps.Animation.DROP,
-                        icon: {
-                            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                            scale: 5,
-                            rotation: position.coords.heading ,
-                            fillColor: 'red',
-                            fillOpacity: 0.8,
-                            strokeColor: 'red',
-                            strokeWeight: 2
-                        }
-                    });
-
-                    // Create an info window for the user's marker
-                    const infoWindow = new google.maps.InfoWindow({
-                        content: 'Your Location'
-                    });
-
-                    // Show the info window when clicking on the user's marker
-                    userMarker.addListener("click", () => {
-                        infoWindow.open(map, userMarker);
-                    });
-                } else {
-                    // Update existing user marker position and rotation
-                    userMarker.setPosition(userLocation);
-                    userMarker.setIcon({
-                        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                        scale: 5,
-                        rotation: position.coords.heading ,
-                        fillColor: 'red',
-                        fillOpacity: 0.8,
-                        strokeColor: 'red',
-                        strokeWeight: 2
-                    });
-                }
-            },
-            (error) => {
-                console.error('Error getting user location:', error);
-
-                // Fallback to a default location if user location is not available
-                const defaultLocation = { lat: 47.291920, lng: 0.723910 };
-                map.setCenter(defaultLocation);
-            }
-        );
-    } else {
-        // Fallback to a default location if geolocation is not supported
-        const defaultLocation = { lat: 41.291920, lng: 0.823910 };
-        map.setCenter(defaultLocation);
+        if (!userMarker) {
+            createUserMarker(userLocation, position.coords.heading);
+        } else {
+            updateExistingUserMarker(userLocation, position.coords.heading);
+        }
     }
 
-    // Fetch markers from the server
+    function createUserMarker(location, heading) {
+        userMarker = new google.maps.Marker({
+            position: location,
+            map,
+            title: 'Your Location',
+            animation: google.maps.Animation.DROP,
+            icon: {
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                scale: 5,
+                rotation: heading,
+                fillColor: 'red',
+                fillOpacity: 0.8,
+                strokeColor: 'red',
+                strokeWeight: 2
+            }
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+            content: 'Your Location'
+        });
+
+        userMarker.addListener("click", () => {
+            infoWindow.open(map, userMarker);
+        });
+    }
+
+    function updateExistingUserMarker(location, heading) {
+        userMarker.setPosition(location);
+        userMarker.setIcon({
+            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+            scale: 5,
+            rotation: heading,
+            fillColor: 'red',
+            fillOpacity: 0.8,
+            strokeColor: 'red',
+            strokeWeight: 2
+        });
+    }
+
+    function handleLocationError(error) {
+        console.error('Error getting user location:', error);
+        map.setCenter(fallbackDefaultLocation);
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(handleUserLocation, handleLocationError);
+    } else {
+        map.setCenter(fallbackDefaultLocation);
+    }
+
+    const markerIconSize = new google.maps.Size(38, 31);
+
     fetch('/get_markers')
         .then(response => {
             if (!response.ok) {
@@ -86,34 +89,59 @@ function initMap() {
             return response.json();
         })
         .then(markers => {
-            // Create markers dynamically based on the data from MongoDB
-            markers.forEach(markerData => {
-                const marker = new google.maps.Marker({
-                    position: {
-                        lat: markerData.position.latitude,
-                        lng: markerData.position.longitude
-                    },
-                    map,
-                    title: markerData.title,
-                    label: markerData.label,
-                    icon: {
-                        url: markerData.icon,
-                        scaledSize: new google.maps.Size(38, 31)
-                    },
-                    animation: google.maps.Animation.DROP,
-                });
-
-                // Create an info window for each marker
-                const infoWindow = new google.maps.InfoWindow({
-                    content: markerData.label
-                });
-
-                // Show the info window when clicking on the marker
-                marker.addListener("click", () => {
-                    infoWindow.open(map, marker);
-                });
-            });
+            createMarkersFromServerData(markers);
         })
         .catch(error => console.error('Error fetching markers:', error));
 
+    function createMarkersFromServerData(markers) {
+        markers.forEach(markerData => {
+            const marker = new google.maps.Marker({
+                position: {
+                    lat: markerData.position.latitude,
+                    lng: markerData.position.longitude
+                },
+                map,
+                title: markerData.title,
+                label: markerData.label,
+                icon: {
+                    url: markerData.icon,
+                    scaledSize: markerIconSize
+                },
+                animation: google.maps.Animation.DROP,
+            });
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: markerData.label
+            });
+
+            marker.addListener("click", () => {
+                infoWindow.open(map, marker);
+            });
+        });
+    }
+
+    // Example: Add a marker when the map is clicked
+    map.addListener('click', (event) => {
+        // Call the function to add a new marker from the frontend
+        addNewMarkerFromFrontend(event.latLng);
+    });
+
+    // Add this function to your script
+    function addNewMarkerFromFrontend(position) {
+        const infoWindow = new google.maps.InfoWindow({
+            content: '<div><strong>Marker Information</strong><br><input type="text" id="infoInput" placeholder="Enter information"><br><button onclick="saveNewMarkerInfo(\'' + position.lat() + '\', \'' + position.lng() + '\')">Submit</button></div>'
+        });
+
+        const newMarker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: 'New Marker',
+            animation: google.maps.Animation.DROP
+        });
+
+        // Show the info window when clicking on the new marker
+        newMarker.addListener("click", () => {
+            infoWindow.open(map, newMarker);
+        });
+    }
 }
