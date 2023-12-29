@@ -15,6 +15,14 @@
     - [x] adding markers + content 
     - [x] set current place to actual geolocalisation
     - [x] rewrite the all stuff in python so I understand the backend lol
+    - [ ] create a frontend interface for markers
+    - [ ] python backend to create the marker based on your localisation (200m around max)
+
+
+    
+    - [ ] frontend way to interact with markers : reply, share, like ....
+    - [ ] login module to implement
+    - [ ] backend  profile creation
     - [ ] profile page 
     - [ ] Wolf pixelArt creator --> to create your wolf avatar
     - [ ] Customization for your Wolf Steps
