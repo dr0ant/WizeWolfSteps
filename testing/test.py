@@ -1,13 +1,68 @@
 import json
+import base64
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
+from datetime import datetime
+
 
 with open('MongoDB/connexion_string.json', 'r') as file:
         connection_data = json.load(file)
         print(connection_data['server'])
 
+
+
+def marker_creation():
+    # Connect to MongoDB
+    client = MongoClient(connection_data['server'])
+    db = client['Wolf_Steps']
+    markers_collection = db['Markers']
+    try:
+        # Extract information from the form data
+        latitude = float(request.form.get('latitude', 0.0))
+        longitude = float(request.form.get('longitude', 0.0))
+        image_base64 = request.form.get('image_base64', '')
+        sound_base64 = request.form.get('sound_base64', '')
+        text = request.form.get('text', '')
+        name = request.form.get('name', '')
+        user_id = int(request.form.get('user_id', 666))
+
+        # Decode base64-encoded image and sound
+        image_data = base64.b64decode(image_base64)
+        sound_data = base64.b64decode(sound_base64)
+
+        # Get the creation time
+        creation_time = datetime.now()
+
+        # Create the marker object
+        marker = {
+            "latitude": latitude,
+            "longitude": longitude,
+            "image": image_data,
+            "sound": sound_data,
+            "text": text,
+            "name": name,
+            "user_id": user_id,
+            "creation_time": creation_time
+        }
+
+        # Insert the marker into the MongoDB collection
+         # Check for existing documents based on the 'id' field
+        existing_ids = markers_collection.distinct("id")
+        new_markers = [marker for marker in markers["markers"] if marker["id"] not in existing_ids]
+
+        # Insert only the new markers to MongoDB
+        if new_markers:
+            markers_collection.insert_many(new_markers)
+            print(f"{len(new_markers)} new markers uploaded to MongoDB.")
+        else:
+            print("No new markers to upload.")
+
+        return jsonify({"status": "success", "message": "Marker created successfully"})
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 
 def upload_markers_to_mongodb():
     # Connect to MongoDB

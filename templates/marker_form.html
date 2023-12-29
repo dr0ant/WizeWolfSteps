@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: None;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: antiquewhite;
+        }
+
+        .form-box {
+            background-color: #181630;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(212, 208, 208, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        form input {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #0b769a;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0b536b;
+        }
+
+        img{
+            width: 50px;
+            -webkit-filter: drop-shadow(5px 5px 5px #75c3c3);
+            filter: drop-shadow(5px 5px 5px #85b2b9);
+        }   
+    </style>
+</head>
+<body>
+    <div class="form-box">
+        <center>
+            <div class="image-container">
+                <img src="/Assets/Step_white.png" alt="step">
+            </div>
+        </center>
+        <form action="/marker_creation" method="post" enctype="multipart/form-data" onsubmit="getLocation()">
+            Latitude: <input type="text" name="latitude" id="latitude" required><br>
+            Longitude: <input type="text" name="longitude" id="longitude" required><br>
+            Image (file): <input type="file" name="image" accept="image/*" required><br>
+            Sound (file): <input type="file" name="sound" accept="audio/*" required><br>
+            Name: <input type="text" name="name" required><br>
+            Text: <textarea name="text" rows="4"></textarea><br>
+            User ID: <input type="text" name="user_id" value="666" required><br>
+            <button type="submit">Create Step</button>
+        </form>
+    </div>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        document.getElementById('latitude').value = position.coords.latitude;
+                        document.getElementById('longitude').value = position.coords.longitude;
+                    },
+                    function(error) {
+                        console.error("Error getting location: " + error.message);
+                    }
+                );
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Fetch the user's location when the page loads
+        getLocation();
+    </script>
+</body>
+</html>
