@@ -1,10 +1,12 @@
 import json
 import base64
+import geocoder
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
 from datetime import datetime
+
 
 
 with open('MongoDB/connexion_string.json', 'r') as file:
@@ -136,6 +138,23 @@ def get_markers():
 
     # Use the custom encoder when converting to JSON
     return json.dumps(all_markers, cls=MongoEncoder)
+
+def get_user_location():
+    try:
+        location = geocoder.ip('me')
+        if location.ok:
+            latitude, longitude = location.latlng
+            return {'lat': latitude, 'lng': longitude}
+        else:
+            print(f"Failed to retrieve location information: {location}")
+            return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+    
+
+
+print(get_user_location())
 
 # Test the function separately
 #if __name__ == '__main__':
