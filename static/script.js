@@ -185,7 +185,7 @@ function initMap() {
                         <img class="step" src="/static/Assets/Step.png" alt="step">
                     </div>
                 
-                    <form action="/marker_creation" method="post" enctype="multipart/form-data" onsubmit="submitForm(event)">
+                    <form action="/create_marker" method="post" enctype="multipart/form-data" onsubmit="submitForm(event)"">
                         Latitude: <input type="text" name="latitude" id="latitude" value="${position.lat()}" required><br>
                         Longitude: <input type="text" name="longitude" id="longitude" value="${position.lng()}" required><br>
                         Image (file): <input type="file" name="image" accept="image/*" ><br>

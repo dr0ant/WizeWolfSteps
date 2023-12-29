@@ -17,7 +17,7 @@
     - [x] rewrite the all stuff in python so I understand the backend lol
     - [x] create a frontend interface for markers
     - [x] center the map to the current user localisation
-    - [ ] python backend to create the marker based on your localisation (200m around max)
+    - [x] python backend to create the marker based on your localisation (200m around max)
 
 
     
@@ -38,6 +38,7 @@
 
 ![new state of dev 29012023](static/Assets/412681018_902724471510530_6358729437072687604_n.png)
 
+![new state of dev 29012023 SOIR](static/Assets/413105211_742329651118741_4968046845376166436_n.png)
 
 
 

@@ -66,5 +66,35 @@ def get_api_key():
 
 
 
+@app.route('/create_marker', methods=['POST'])
+def create_marker():
+    # Extract form data
+    latitude = request.form.get('latitude')
+    longitude = request.form.get('longitude')
+    image = request.files.get('image')
+    sound = request.files.get('sound')
+    name = request.form.get('name')
+    text = request.form.get('text')
+    user_id = request.form.get('user_id')
+
+  # Encode image and sound files to Base64
+    image_data = base64.b64encode(image.read()).decode('utf-8')
+    sound_data = base64.b64encode(sound.read()).decode('utf-8')
+
+    # Insert data into MongoDB
+    marker_data = {
+        'latitude': float(latitude),
+        'longitude': float(longitude),
+        'image_path': image_data,
+        'sound_path': sound_data,
+        'name': name,
+        'text': text,
+        'user_id': user_id
+    }
+
+    markers_collection.insert_one(marker_data)
+
+    return jsonify({'message': 'Marker created successfully'})
+
 if __name__ == '__main__':
     app.run(debug=True)
