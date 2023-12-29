@@ -11,9 +11,10 @@
 <h1>Wolf Steps, Walking in our steps</h1>
 <div id="map"></div>
 
+<script src="script.js"></script>
 <script>
-    // Load the JSON data using AJAX
-    fetch('/get_api_key')
+    // Load the JSON data
+    fetch('ApiKeys/GoogleAPIKEY.json')
         .then(response => response.json())
         .then(data => {
             // Create the Google Maps API link using the JSON data
@@ -30,7 +31,5 @@
         })
         .catch(error => console.error('Error loading API keys:', error));
 </script>
-
-<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
