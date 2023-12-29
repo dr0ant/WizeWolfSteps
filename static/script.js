@@ -1,4 +1,3 @@
-
 function initMap() {
     const mapOptions = {
         zoom: 20,
@@ -13,6 +12,7 @@ function initMap() {
 
     const map = new google.maps.Map(document.getElementById('map'), mapOptions);
     let userMarker;
+    let isCreatingMarker = false;
 
     function handleUserLocation(position) {
         const userLocation = {
@@ -122,26 +122,107 @@ function initMap() {
 
     // Example: Add a marker when the map is clicked
     map.addListener('click', (event) => {
-        // Call the function to add a new marker from the frontend
-        addNewMarkerFromFrontend(event.latLng);
+        // Check if a marker is currently being created
+        if (!isCreatingMarker) {
+            // Call the function to add a new marker from the frontend
+            addNewMarkerFromFrontend(event.latLng);
+            isCreatingMarker = true; // Set the flag to true to indicate marker creation in progress
+        }
     });
 
     // Add this function to your script
-    function addNewMarkerFromFrontend(position) {
-        const infoWindow = new google.maps.InfoWindow({
-            content: '<div><strong>Marker Information</strong><br><input type="text" id="infoInput" placeholder="Enter information"><br><button onclick="saveNewMarkerInfo(\'' + position.lat() + '\', \'' + position.lng() + '\')">Submit</button></div>'
-        });
 
+    function addNewMarkerFromFrontend(position) {
+        // HTML form content
+        const formContent = `
+            <style>
+                .step {
+                    width: 50px;
+                    -webkit-filter: drop-shadow(5px 5px 5px #75c3c3);
+                    filter: drop-shadow(5px 5px 5px #85b2b9);
+                }
+    
+                form {
+                    display: flex;
+                    flex-direction: column;
+                    max-width: 220px;
+                    margin: auto;
+                }
+    
+                .form-box {
+                    background-color: white;
+                    padding: 0px;
+                    border-radius: 0px;
+                    color: darkblue;
+                }
+    
+                button {
+                    padding: 10px;
+                    background-color: #0b769a;
+                    color: #fff;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+    
+                button:hover {
+                    background-color: #0b536b;
+                }
+    
+                form input {
+                    margin-bottom: 0px;
+                    padding: 0px;
+                    border-radius: 0px;
+                    display: inline-block;
+                }
+    
+            
+            </style>
+        
+            <div class="form-box">
+                <center>
+                    <div class="image-container">
+                        <img class="step" src="/static/Assets/Step.png" alt="step">
+                    </div>
+                
+                    <form action="/marker_creation" method="post" enctype="multipart/form-data" onsubmit="submitForm(event)">
+                        Latitude: <input type="text" name="latitude" id="latitude" value="${position.lat()}" required><br>
+                        Longitude: <input type="text" name="longitude" id="longitude" value="${position.lng()}" required><br>
+                        Image (file): <input type="file" name="image" accept="image/*" ><br>
+                        Sound (file): <input type="file" name="sound" accept="audio/*" ><br>
+                        Name: <textarea name="text" rows="4"></textarea><br>
+                        Text: <textarea name="text" rows="4"></textarea><br>
+                        User ID: <input type="text" name="user_id" value="666" required><br>
+                        <button type="submit">Create Step</button>
+                    </form>
+                </div>
+            </center>
+        `;
+    
+        const infoWindow = new google.maps.InfoWindow({
+            content: formContent
+        });
+    
         const newMarker = new google.maps.Marker({
             position: position,
             map: map,
             title: 'New Marker',
+            icon: {
+                url: 'static/Assets/Step_white.png',
+                scaledSize: markerIconSize
+            },
             animation: google.maps.Animation.DROP
         });
-
+    
         // Show the info window when clicking on the new marker
         newMarker.addListener("click", () => {
             infoWindow.open(map, newMarker);
         });
+    
+        // Close the info window and reset the flag when the submit button is clicked
+        infoWindow.addListener("closeclick", () => {
+            isCreatingMarker = false;
+        });
     }
-}
+    
+}    

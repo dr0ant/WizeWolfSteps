@@ -26,7 +26,7 @@
         form {
             display: flex;
             flex-direction: column;
-            max-width: 400px;
+            max-width: 40px;
             margin: auto;
         }
 
@@ -67,8 +67,8 @@
         <form action="/marker_creation" method="post" enctype="multipart/form-data" onsubmit="getLocation()" onsubmit="submitForm(event)">
             Latitude: <input type="text" name="latitude" id="latitude" required><br>
             Longitude: <input type="text" name="longitude" id="longitude" required><br>
-            Image (file): <input type="file" name="image" accept="image/*" required><br>
-            Sound (file): <input type="file" name="sound" accept="audio/*" required><br>
+            Image (file): <input type="file" name="image" accept="image/*" ><br>
+            Sound (file): <input type="file" name="sound" accept="audio/*" ><br>
             Name: <input type="text" name="name" required><br>
             Text: <textarea name="text" rows="4"></textarea><br>
             User ID: <input type="text" name="user_id" value="666" required><br>
