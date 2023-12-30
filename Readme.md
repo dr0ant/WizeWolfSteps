@@ -40,7 +40,8 @@
 
 ![new state of dev 29012023 SOIR](static/Assets/413105211_742329651118741_4968046845376166436_n.png)
 
-![stateofdev 30122023](static/Assets/stateofdev_30dec.mp4)
+[![Watch the video](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID/0.jpg)](https://mega.nz/embed/jk8iyLqb#Al155hFNFUahPBFVn9rtXvlhobjo3GQSlxPPG7l2HoI)
+
 
 
 
