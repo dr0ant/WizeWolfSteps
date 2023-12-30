@@ -111,16 +111,17 @@ function initMap() {
                 });
         
                 const infoWindowContent = `
-                    <div>
+                    <div style="max-width: 300px;">
                         <h1>${markerData.title}</h1>
                         <p><strong>ID:</strong> ${markerData.id}</p>
                         <p><strong>Creation Datetime:</strong> ${markerData.creation_datetime}</p>
                         <p><strong>Label:</strong> ${markerData.label}</p>
                         <p><strong>User ID:</strong> ${markerData.user_id}</p>
                         <p><strong>Position:</strong> Latitude: ${markerData.position.latitude}, Longitude: ${markerData.position.longitude}</p>
-                        <img src="data:image/png;base64, ${markerData.image_base64}" alt="Image">
+                        <img style="max-width: 200px;" src="data:image/png;base64, ${markerData.image_base64}" alt="Image">
                     </div>
                 `;
+
         
                 const infoWindow = new google.maps.InfoWindow({
                     content: infoWindowContent
