@@ -1,6 +1,6 @@
 import json
 import time
-from flask import Flask, render_template, jsonify,request
+from flask import Flask, render_template, jsonify,request,redirect
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
@@ -101,7 +101,8 @@ def create_marker():
 
     markers_collection.insert_one(marker_data)
 
-    return jsonify({'message': 'Marker created successfully'})
+    # Redirect to the root page after successfully creating a marker
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run(debug=True)
