@@ -102,7 +102,7 @@ def create_marker():
     markers_collection.insert_one(marker_data)
 
     # Redirect to the root page after successfully creating a marker
-    return redirect('/')
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

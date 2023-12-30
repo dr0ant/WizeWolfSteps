@@ -93,32 +93,45 @@ function initMap() {
         })
         .catch(error => console.error('Error fetching markers:', error));
 
-    function createMarkersFromServerData(markers) {
-        markers.forEach(markerData => {
-            const marker = new google.maps.Marker({
-                position: {
-                    lat: markerData.position.latitude,
-                    lng: markerData.position.longitude
-                },
-                map,
-                title: markerData.title,
-                label: markerData.label,
-                icon: {
-                    url: markerData.icon,
-                    scaledSize: markerIconSize
-                },
-                animation: google.maps.Animation.DROP,
+        function createMarkersFromServerData(markers) {
+            markers.forEach(markerData => {
+                const marker = new google.maps.Marker({
+                    position: {
+                        lat: markerData.position.latitude,
+                        lng: markerData.position.longitude
+                    },
+                    map,
+                    title: markerData.title,
+                    label: markerData.label,
+                    icon: {
+                        url: markerData.icon,
+                        scaledSize: markerIconSize
+                    },
+                    animation: google.maps.Animation.DROP,
+                });
+        
+                const infoWindowContent = `
+                    <div>
+                        <h1>${markerData.title}</h1>
+                        <p><strong>ID:</strong> ${markerData.id}</p>
+                        <p><strong>Creation Datetime:</strong> ${markerData.creation_datetime}</p>
+                        <p><strong>Label:</strong> ${markerData.label}</p>
+                        <p><strong>User ID:</strong> ${markerData.user_id}</p>
+                        <p><strong>Position:</strong> Latitude: ${markerData.position.latitude}, Longitude: ${markerData.position.longitude}</p>
+                        <img src="data:image/png;base64, ${markerData.image_base64}" alt="Image">
+                    </div>
+                `;
+        
+                const infoWindow = new google.maps.InfoWindow({
+                    content: infoWindowContent
+                });
+        
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
             });
-
-            const infoWindow = new google.maps.InfoWindow({
-                content: markerData.label
-            });
-
-            marker.addListener("click", () => {
-                infoWindow.open(map, marker);
-            });
-        });
-    }
+        }
+        
 
     // Example: Add a marker when the map is clicked
     map.addListener('click', (event) => {
