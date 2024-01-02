@@ -1,14 +1,18 @@
 import json
 import time
+import base64
 from flask import Flask, render_template, jsonify,request,redirect
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
 from datetime import datetime
-import base64
+from flask_socketio import SocketIO
+
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
+
+socketio = SocketIO(app)
 
 # Connect to MongoDB
 with open('MongoDB/connexion_string.json', 'r') as file:
@@ -103,6 +107,12 @@ def create_marker():
 
     # Redirect to the root page after successfully creating a marker
     return render_template('index.html')
+
+@app.route('/log', methods=['POST'])
+def log():
+    data = request.get_json()
+    print('Received log:', data)
+    return 'Log received successfully'
 
 if __name__ == '__main__':
     app.run(debug=True)

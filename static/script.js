@@ -6,7 +6,7 @@ function initMap() {
         fullscreenControl: false,
         streetViewControl: false
     };
-    
+
     const defaultLocation = { lat: 48.291920, lng: 0.623910 };
     const fallbackDefaultLocation = { lat: 41.291920, lng: 0.823910 };
 
@@ -27,6 +27,41 @@ function initMap() {
         } else {
             updateExistingUserMarker(userLocation, position.coords.heading);
         }
+    }
+
+    function sendLogToServer(logData) {
+        fetch('/log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ log: logData }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Failed to send log to server');
+            }
+        });
+    }
+
+    function handleLocationError(error) {
+        console.error('Error getting user location:', error);
+        map.setCenter(fallbackDefaultLocation);
+    }
+
+    function isMarkerWithinRadius(markerPosition) {
+        const userPosition = userMarker.getPosition();
+        const distance = google.maps.geometry.spherical.computeDistanceBetween(userPosition, markerPosition);
+        return distance <= 100;
+    }
+
+    function showCustomPopup(message) {
+        const infoWindow = new google.maps.InfoWindow({
+            content: message
+        });
+
+        infoWindow.setPosition(userMarker.getPosition());
+        infoWindow.open(map);
     }
 
     function createUserMarker(location, heading) {
@@ -51,7 +86,27 @@ function initMap() {
         });
 
         userMarker.addListener("click", () => {
-            infoWindow.open(map, userMarker);
+            const markerPosition = userMarker.getPosition();
+            const isWithinRadius = isMarkerWithinRadius(markerPosition);
+
+            if (isWithinRadius) {
+                infoWindow.open(map, userMarker);
+            } else {
+                showCustomPopup('Get closer from the step, you can only interact with steps within a 100m radius');
+            }
+        });
+
+        // Add a circle around the user marker
+        const userCircle = new google.maps.Circle({
+            map,
+            center: location,
+            radius: 100,
+            fillColor: '#B7E6EE',
+            fillOpacity: 0.1,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.5,
+            strokeWeight: 1,
+            clickable: false  // Make the circle not clickable
         });
     }
 
@@ -66,11 +121,64 @@ function initMap() {
             strokeColor: 'red',
             strokeWeight: 2
         });
+
+        // Update the circle position
+        const userCircle = new google.maps.Circle({
+            map,
+            center: location,
+            radius: 100,
+            fillColor: '#B7E6EE',
+            fillOpacity: 0.1,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.5,
+            strokeWeight: 1
+        });
     }
 
-    function handleLocationError(error) {
-        console.error('Error getting user location:', error);
-        map.setCenter(fallbackDefaultLocation);
+    function createMarkersFromServerData(markers) {
+        markers.forEach(markerData => {
+            const marker = new google.maps.Marker({
+                position: {
+                    lat: markerData.position.latitude,
+                    lng: markerData.position.longitude
+                },
+                map,
+                title: markerData.title,
+                label: null,
+                icon: {
+                    url: markerData.icon,
+                    scaledSize: markerIconSize
+                },
+                animation: google.maps.Animation.DROP,
+            });
+
+            const infoWindowContent = `
+            <div style="max-width: 300px;">
+                <h1>${markerData.title}</h1>
+                <p><strong>ID:</strong> ${markerData.id}</p>
+                <p><strong>Creation Datetime:</strong> ${markerData.creation_datetime}</p>
+                <p><strong>Label:</strong> ${markerData.label}</p>
+                <p><strong>User ID:</strong> ${markerData.user_id}</p>
+                <p><strong>Position:</strong> Latitude: ${markerData.position.latitude}, Longitude: ${markerData.position.longitude}</p>
+                <img style="max-width: 200px;" src="data:image/png;base64, ${markerData.image_base64}" alt="Image">
+            </div>
+        `;
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: infoWindowContent
+            });
+
+            marker.addListener("click", () => {
+                const markerPosition = marker.getPosition();
+                const isWithinRadius = isMarkerWithinRadius(markerPosition);
+
+                if (isWithinRadius) {
+                    infoWindow.open(map, marker);
+                } else {
+                    showCustomPopup('Get closer from the step, you can only interact with steps within a 100m radius');
+                }
+            });
+        });
     }
 
     if (navigator.geolocation) {
@@ -93,61 +201,21 @@ function initMap() {
         })
         .catch(error => console.error('Error fetching markers:', error));
 
-        function createMarkersFromServerData(markers) {
-            markers.forEach(markerData => {
-                const marker = new google.maps.Marker({
-                    position: {
-                        lat: markerData.position.latitude,
-                        lng: markerData.position.longitude
-                    },
-                    map,
-                    title: markerData.title,
-                    label: null,
-                    icon: {
-                        url: markerData.icon,
-                        scaledSize: markerIconSize
-                    },
-                    animation: google.maps.Animation.DROP,
-                });
-        
-                const infoWindowContent = `
-                    <div style="max-width: 300px;">
-                        <h1>${markerData.title}</h1>
-                        <p><strong>ID:</strong> ${markerData.id}</p>
-                        <p><strong>Creation Datetime:</strong> ${markerData.creation_datetime}</p>
-                        <p><strong>Label:</strong> ${markerData.label}</p>
-                        <p><strong>User ID:</strong> ${markerData.user_id}</p>
-                        <p><strong>Position:</strong> Latitude: ${markerData.position.latitude}, Longitude: ${markerData.position.longitude}</p>
-                        <img style="max-width: 200px;" src="data:image/png;base64, ${markerData.image_base64}" alt="Image">
-                    </div>
-                `;
-
-        
-                const infoWindow = new google.maps.InfoWindow({
-                    content: infoWindowContent
-                });
-        
-                marker.addListener("click", () => {
-                    infoWindow.open(map, marker);
-                });
-            });
-        }
-        
-
     // Example: Add a marker when the map is clicked
     map.addListener('click', (event) => {
-        // Check if a marker is currently being created
         if (!isCreatingMarker) {
-            // Call the function to add a new marker from the frontend
             addNewMarkerFromFrontend(event.latLng);
-            isCreatingMarker = true; // Set the flag to true to indicate marker creation in progress
+            isCreatingMarker = true;
         }
     });
 
-    // Add this function to your script
+// Add this function to your script
 
-    function addNewMarkerFromFrontend(position) {
-        // HTML form content
+function addNewMarkerFromFrontend(position) {
+    const userPosition = userMarker.getPosition();
+    const distance = google.maps.geometry.spherical.computeDistanceBetween(userPosition, position);
+
+    if (distance <= 100) {
         const formContent = `
             <style>
                 .step {
@@ -189,8 +257,6 @@ function initMap() {
                     border-radius: 0px;
                     display: inline-block;
                 }
-    
-            
             </style>
         
             <div class="form-box">
@@ -199,7 +265,7 @@ function initMap() {
                         <img class="step" src="/static/Assets/Step.png" alt="step">
                     </div>
                 
-                    <form action="/create_marker" method="post" enctype="multipart/form-data" onsubmit="submitForm(event)"">
+                    <form action="/create_marker" method="post" enctype="multipart/form-data" onsubmit="submitForm(event)">
                         Latitude: <input type="text" name="latitude" id="latitude" value="${position.lat()}" required><br>
                         Longitude: <input type="text" name="longitude" id="longitude" value="${position.lng()}" required><br>
                         Image (file): <input type="file" name="image" accept="image/*" ><br>
@@ -212,11 +278,11 @@ function initMap() {
                 </div>
             </center>
         `;
-    
+
         const infoWindow = new google.maps.InfoWindow({
             content: formContent
         });
-    
+
         const newMarker = new google.maps.Marker({
             position: position,
             map: map,
@@ -227,16 +293,17 @@ function initMap() {
             },
             animation: google.maps.Animation.DROP
         });
-    
-        // Show the info window when clicking on the new marker
+
         newMarker.addListener("click", () => {
             infoWindow.open(map, newMarker);
         });
-    
-        // Close the info window and reset the flag when the submit button is clicked
+
         infoWindow.addListener("closeclick", () => {
             isCreatingMarker = false;
         });
+    } else {
+        showCustomPopup('Get closer from the step, you can only create markers within a 100m radius.');
     }
-    
-}    
+}
+
+}

@@ -50,5 +50,15 @@
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+<script>
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function sendLogToServer(logData) {
+            socket.emit('log', logData);
+        }
+</script>
+
+
 </body>
 </html>
