@@ -302,9 +302,65 @@ function addNewMarkerFromFrontend(position) {
             isCreatingMarker = false;
         });
     } else {
-        showCustomPopup('Get closer from the step, you can only create markers within a 100m radius.');
+        const tooFarContent = `
+            <style>
+                .too-far-box {
+                    background-color: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    color: darkblue;
+                    max-width: 220px;
+                    margin: auto;
+                }
+    
+                button {
+                    padding: 10px;
+                    background-color: #0b769a;
+                    color: #fff;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+    
+                button:hover {
+                    background-color: #0b536b;
+                }
+            </style>
+    
+            <div class="too-far-box">
+                <p>You are too far away. You can only create markers within a 100m radius.</p>
+                <button id="closeButton" onclick="closeTooFarPopup()">Close</button>
+            </div>
+        `;
+    
+        const tooFarInfoWindow = new google.maps.InfoWindow({
+            content: tooFarContent
+        });
+    
+        const tooFarMarker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: 'Too Far Marker',
+            icon: {
+                url: 'static/Assets/Step_red.png',  // Adjust the icon URL accordingly
+                scaledSize: markerIconSize
+            },
+            animation: google.maps.Animation.DROP
+        });
+    
+        tooFarMarker.addListener("click", () => {
+            tooFarInfoWindow.open(map, tooFarMarker);
+        });
+    
+        tooFarInfoWindow.addListener("closeclick", () => {
+            isCreatingMarker = false;
+        });
+    
+        function closeTooFarPopup() {
+            tooFarInfoWindow.close();
+            isCreatingMarker = false;
+        }
     }
-    isCreatingMarker = false;  // Ensure isCreatingMarker is reset even if distance > 100
-}
 
+}
 }
