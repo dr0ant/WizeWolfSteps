@@ -102,7 +102,7 @@ function initMap() {
                     },
                     map,
                     title: markerData.title,
-                    label: markerData.label,
+                    label: null,
                     icon: {
                         url: markerData.icon,
                         scaledSize: markerIconSize

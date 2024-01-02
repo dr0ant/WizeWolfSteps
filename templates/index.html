@@ -44,9 +44,7 @@
         })
         .catch(error => console.error('Error loading API keys:', error));
 </script>
-<script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry&callback=initMap">
-</script>
+
 
 <!-- Move your script to the end of the body or use an event listener -->
 <script src="{{ url_for('static', filename='script.js') }}"></script>
