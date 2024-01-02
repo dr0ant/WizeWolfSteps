@@ -43,6 +43,10 @@
 [![Watch the video](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID/0.jpg)](https://mega.nz/embed/jk8iyLqb#Al155hFNFUahPBFVn9rtXvlhobjo3GQSlxPPG7l2HoI)
 
 
+New state of dev 02012024
+![New state of dev 02012024](static/Assets/413120478_1362478524440976_2755527758730605506_n.png)
+
+
 
 
 

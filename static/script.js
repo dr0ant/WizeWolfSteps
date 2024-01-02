@@ -304,6 +304,7 @@ function addNewMarkerFromFrontend(position) {
     } else {
         showCustomPopup('Get closer from the step, you can only create markers within a 100m radius.');
     }
+    isCreatingMarker = false;  // Ensure isCreatingMarker is reset even if distance > 100
 }
 
 }
