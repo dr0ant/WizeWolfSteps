@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sign-In</title>
+
+    <!-- Include Google Sign-In API -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <!-- Google Sign-In API configuration -->
+    <meta name="google-signin-client_id" content="580453889147-g7329gc67766l4ft8eatoo9ukgbcne1t.apps.googleusercontent.com">
+</head>
+<body>
+
+<h2>Sign in with Google</h2>
+
+<!-- Google Sign-In button -->
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+<script>
+    // Function called when Google Sign-In is successful
+    function onSignIn(googleUser) {
+        // Retrieve user information
+        var profile = googleUser.getBasicProfile();
+        var id_token = googleUser.getAuthResponse().id_token;
+
+        // Send the id_token to your server for authentication
+        // You can use AJAX to send the token to your Flask backend
+
+        // For example:
+        // var xhr = new XMLHttpRequest();
+        // xhr.open('POST', '/google-signin');
+        // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        // xhr.onload = function() {
+        //     console.log('Signed in as: ' + xhr.responseText);
+        // };
+        // xhr.send('idtoken=' + id_token);
+        
+        // After authentication, you can redirect the user or perform other actions
+    }
+</script>
+
+</body>
+</html>

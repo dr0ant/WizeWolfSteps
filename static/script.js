@@ -37,11 +37,11 @@ function initMap() {
             },
             body: JSON.stringify({ log: logData }),
         })
-        .then(response => {
-            if (!response.ok) {
-                console.error('Failed to send log to server');
-            }
-        });
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Failed to send log to server');
+                }
+            });
     }
 
     function handleLocationError(error) {
@@ -108,6 +108,30 @@ function initMap() {
             strokeWeight: 1,
             clickable: false  // Make the circle not clickable
         });
+
+        // Add a second icon on top of the arrow
+        const imageIcon = {
+            url: 'path/to/your/image.png',
+            size: new google.maps.Size(32, 32),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(16, 16),
+            scaledSize: new google.maps.Size(32, 32),
+        };
+
+        const overlay = new google.maps.OverlayView();
+        overlay.draw = function () {
+            const markerPosition = overlay.getProjection().fromLatLngToDivPixel(userMarker.getPosition());
+            const imageMarker = document.createElement("div");
+            imageMarker.style.position = 'absolute';
+            imageMarker.style.width = '32px';
+            imageMarker.style.height = '32px';
+            imageMarker.style.top = markerPosition.y - 16 + 'px';
+            imageMarker.style.left = markerPosition.x - 16 + 'px';
+            imageMarker.style.backgroundImage = `url(${imageIcon.url})`;
+
+            this.getPanes().overlayMouseTarget.appendChild(imageMarker);
+        };
+        overlay.setMap(map);
     }
 
     function updateExistingUserMarker(location, heading) {
@@ -133,6 +157,22 @@ function initMap() {
             strokeOpacity: 0.5,
             strokeWeight: 1
         });
+
+        // Update the second icon position
+        const overlay = new google.maps.OverlayView();
+        overlay.draw = function () {
+            const markerPosition = overlay.getProjection().fromLatLngToDivPixel(userMarker.getPosition());
+            const imageMarker = document.createElement("div");
+            imageMarker.style.position = 'absolute';
+            imageMarker.style.width = '32px';
+            imageMarker.style.height = '32px';
+            imageMarker.style.top = markerPosition.y - 16 + 'px';
+            imageMarker.style.left = markerPosition.x - 16 + 'px';
+            imageMarker.style.backgroundImage = `url(path/to/your/image.png)`;
+
+            this.getPanes().overlayMouseTarget.appendChild(imageMarker);
+        };
+        overlay.setMap(map);
     }
 
     function createMarkersFromServerData(markers) {
@@ -209,35 +249,34 @@ function initMap() {
         }
     });
 
-// Add this function to your script
+    // Add this function to your script
+    function addNewMarkerFromFrontend(position) {
+        const userPosition = userMarker.getPosition();
+        const distance = google.maps.geometry.spherical.computeDistanceBetween(userPosition, position);
 
-function addNewMarkerFromFrontend(position) {
-    const userPosition = userMarker.getPosition();
-    const distance = google.maps.geometry.spherical.computeDistanceBetween(userPosition, position);
-
-    if (distance <= 100) {
-        const formContent = `
+        if (distance <= 100) {
+            const formContent = `
             <style>
                 .step {
                     width: 50px;
                     -webkit-filter: drop-shadow(5px 5px 5px #75c3c3);
                     filter: drop-shadow(5px 5px 5px #85b2b9);
                 }
-    
+
                 form {
                     display: flex;
                     flex-direction: column;
                     max-width: 220px;
                     margin: auto;
                 }
-    
+
                 .form-box {
                     background-color: white;
                     padding: 0px;
                     border-radius: 0px;
                     color: darkblue;
                 }
-    
+
                 button {
                     padding: 10px;
                     background-color: #0b769a;
@@ -246,11 +285,11 @@ function addNewMarkerFromFrontend(position) {
                     border-radius: 4px;
                     cursor: pointer;
                 }
-    
+
                 button:hover {
                     background-color: #0b536b;
                 }
-    
+
                 form input {
                     margin-bottom: 0px;
                     padding: 0px;
@@ -258,13 +297,13 @@ function addNewMarkerFromFrontend(position) {
                     display: inline-block;
                 }
             </style>
-        
+
             <div class="form-box">
                 <center>
                     <div class="image-container">
                         <img class="step" src="/static/Assets/Step.png" alt="step">
                     </div>
-                
+
                     <form action="/create_marker" method="post" enctype="multipart/form-data" onsubmit="submitForm(event)">
                         Latitude: <input type="text" name="latitude" id="latitude" value="${position.lat()}" required><br>
                         Longitude: <input type="text" name="longitude" id="longitude" value="${position.lng()}" required><br>
@@ -279,30 +318,30 @@ function addNewMarkerFromFrontend(position) {
             </center>
         `;
 
-        const infoWindow = new google.maps.InfoWindow({
-            content: formContent
-        });
+            const infoWindow = new google.maps.InfoWindow({
+                content: formContent
+            });
 
-        const newMarker = new google.maps.Marker({
-            position: position,
-            map: map,
-            title: 'New Marker',
-            icon: {
-                url: 'static/Assets/Step_white.png',
-                scaledSize: markerIconSize
-            },
-            animation: google.maps.Animation.DROP
-        });
+            const newMarker = new google.maps.Marker({
+                position: position,
+                map: map,
+                title: 'New Marker',
+                icon: {
+                    url: 'static/Assets/Step_white.png',
+                    scaledSize: markerIconSize
+                },
+                animation: google.maps.Animation.DROP
+            });
 
-        newMarker.addListener("click", () => {
-            infoWindow.open(map, newMarker);
-        });
+            newMarker.addListener("click", () => {
+                infoWindow.open(map, newMarker);
+            });
 
-        infoWindow.addListener("closeclick", () => {
-            isCreatingMarker = false;
-        });
-    } else {
-        const tooFarContent = `
+            infoWindow.addListener("closeclick", () => {
+                isCreatingMarker = false;
+            });
+        } else {
+            const tooFarContent = `
             <style>
                 .too-far-box {
                     background-color: white;
@@ -312,7 +351,7 @@ function addNewMarkerFromFrontend(position) {
                     max-width: 220px;
                     margin: auto;
                 }
-    
+
                 button {
                     padding: 10px;
                     background-color: #0b769a;
@@ -321,27 +360,27 @@ function addNewMarkerFromFrontend(position) {
                     border-radius: 4px;
                     cursor: pointer;
                 }
-    
+
                 button:hover {
                     background-color: #0b536b;
                 }
             </style>
-    
+
             <div class="too-far-box">
-                <p>You are too far away. You can only create markers within a 100m radius.</p>
-                <button id="closeButton" onclick="closeTooFarPopup()">Close</button>
+                <p>You are too far away. You can only create Steps within a 100m radius.</p>
             </div>
         `;
-    
-        const tooFarInfoWindow = new google.maps.InfoWindow({
-            content: tooFarContent
-        });
-    
-        const tooFarMarker = new google.maps.Marker({
-            position: position,
-            map: map,
-            title: 'Too Far Marker',
-            icon: {
+
+            const tooFarInfoWindow = new google.maps.InfoWindow({
+                content: tooFarContent
+            });
+
+            const tooFarMarker = new google.maps.Marker({
+                position: position,
+
+                map: map,
+                title: 'Too Far Marker',
+                icon: {
                 url: 'static/Assets/Step_red.png',  // Adjust the icon URL accordingly
                 scaledSize: markerIconSize
             },
@@ -355,11 +394,7 @@ function addNewMarkerFromFrontend(position) {
         tooFarInfoWindow.addListener("closeclick", () => {
             isCreatingMarker = false;
         });
-    
-        function closeTooFarPopup() {
-            tooFarInfoWindow.close();
-            isCreatingMarker = false;
-        }
+
     }
 
 }
