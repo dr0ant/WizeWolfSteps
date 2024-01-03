@@ -65,37 +65,39 @@ function initMap() {
     }
 
     function createUserMarker(location, heading) {
+        const arrowIcon = {
+            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+            scale: 5,
+            rotation: heading,
+            fillColor: 'red',
+            fillOpacity: 0.8,
+            strokeColor: 'red',
+            strokeWeight: 2
+        };
+    
+        const userImage = {
+            url: 'static/Assets/wolf_no_BG.png',
+            size: new google.maps.Size(40, 40),  // Adjust the size accordingly
+            scaledSize: new google.maps.Size(40, 40)  // Adjust the scaledSize accordingly
+        };
+    
         userMarker = new google.maps.Marker({
             position: location,
             map,
             title: 'Your Location',
             animation: google.maps.Animation.DROP,
-            icon: {
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                scale: 5,
-                rotation: heading,
-                fillColor: 'red',
-                fillOpacity: 0.8,
-                strokeColor: 'red',
-                strokeWeight: 2
-            }
+            icon: arrowIcon
         });
-
-        const infoWindow = new google.maps.InfoWindow({
-            content: 'Your Location'
+    
+        const userImageMarker = new google.maps.Marker({
+            position: location,
+            map,
+            title: 'User Image',
+            animation: google.maps.Animation.DROP,
+            icon: userImage,
+            zIndex: -1 // Set zIndex to ensure the image is behind the arrow
         });
-
-        userMarker.addListener("click", () => {
-            const markerPosition = userMarker.getPosition();
-            const isWithinRadius = isMarkerWithinRadius(markerPosition);
-
-            if (isWithinRadius) {
-                infoWindow.open(map, userMarker);
-            } else {
-                showCustomPopup('Get closer from the step, you can only interact with steps within a 100m radius');
-            }
-        });
-
+    
         // Add a circle around the user marker
         const userCircle = new google.maps.Circle({
             map,
@@ -108,13 +110,13 @@ function initMap() {
             strokeWeight: 1,
             clickable: false  // Make the circle not clickable
         });
-
-        
     }
-
+    
     function updateExistingUserMarker(location, heading) {
         userMarker.setPosition(location);
-        userMarker.setIcon({
+    
+        // Update the arrow icon
+        const arrowIcon = {
             path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
             scale: 5,
             rotation: heading,
@@ -122,8 +124,10 @@ function initMap() {
             fillOpacity: 0.8,
             strokeColor: 'red',
             strokeWeight: 2
-        });
-
+        };
+    
+        userMarker.setIcon(arrowIcon);
+    
         // Update the circle position
         const userCircle = new google.maps.Circle({
             map,
@@ -135,9 +139,9 @@ function initMap() {
             strokeOpacity: 0.5,
             strokeWeight: 1
         });
-
-       
     }
+    
+       
 
     function createMarkersFromServerData(markers) {
         markers.forEach(markerData => {
