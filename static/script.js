@@ -77,8 +77,8 @@ function initMap() {
     
         const userImage = {
             url: 'static/Assets/wolf_no_BG.png',
-            size: new google.maps.Size(40, 40),  // Adjust the size accordingly
-            scaledSize: new google.maps.Size(40, 40)  // Adjust the scaledSize accordingly
+            size: new google.maps.Size(40, 40),
+            scaledSize: new google.maps.Size(40, 40)
         };
     
         userMarker = new google.maps.Marker({
@@ -95,7 +95,15 @@ function initMap() {
             title: 'User Image',
             animation: google.maps.Animation.DROP,
             icon: userImage,
-            zIndex: -1 // Set zIndex to ensure the image is behind the arrow
+            zIndex: -1
+        });
+    
+        const infoWindow = new google.maps.InfoWindow({
+            content: '<div><strong>Your Location</strong><br><img src="static/Assets/wolf_no_BG.png" alt="User Image" style="width: 40px; height: 40px;"></div>'
+        });
+    
+        userMarker.addListener('click', () => {
+            infoWindow.open(map, userMarker);
         });
     
         // Add a circle around the user marker
@@ -108,9 +116,10 @@ function initMap() {
             strokeColor: '#FF0000',
             strokeOpacity: 0.5,
             strokeWeight: 1,
-            clickable: false  // Make the circle not clickable
+            clickable: false
         });
     }
+    
     
     function updateExistingUserMarker(location, heading) {
         userMarker.setPosition(location);
