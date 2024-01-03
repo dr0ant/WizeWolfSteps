@@ -109,29 +109,7 @@ function initMap() {
             clickable: false  // Make the circle not clickable
         });
 
-        // Add a second icon on top of the arrow
-        const imageIcon = {
-            url: 'path/to/your/image.png',
-            size: new google.maps.Size(32, 32),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(16, 16),
-            scaledSize: new google.maps.Size(32, 32),
-        };
-
-        const overlay = new google.maps.OverlayView();
-        overlay.draw = function () {
-            const markerPosition = overlay.getProjection().fromLatLngToDivPixel(userMarker.getPosition());
-            const imageMarker = document.createElement("div");
-            imageMarker.style.position = 'absolute';
-            imageMarker.style.width = '32px';
-            imageMarker.style.height = '32px';
-            imageMarker.style.top = markerPosition.y - 16 + 'px';
-            imageMarker.style.left = markerPosition.x - 16 + 'px';
-            imageMarker.style.backgroundImage = `url(${imageIcon.url})`;
-
-            this.getPanes().overlayMouseTarget.appendChild(imageMarker);
-        };
-        overlay.setMap(map);
+        
     }
 
     function updateExistingUserMarker(location, heading) {
@@ -158,21 +136,7 @@ function initMap() {
             strokeWeight: 1
         });
 
-        // Update the second icon position
-        const overlay = new google.maps.OverlayView();
-        overlay.draw = function () {
-            const markerPosition = overlay.getProjection().fromLatLngToDivPixel(userMarker.getPosition());
-            const imageMarker = document.createElement("div");
-            imageMarker.style.position = 'absolute';
-            imageMarker.style.width = '32px';
-            imageMarker.style.height = '32px';
-            imageMarker.style.top = markerPosition.y - 16 + 'px';
-            imageMarker.style.left = markerPosition.x - 16 + 'px';
-            imageMarker.style.backgroundImage = `url(path/to/your/image.png)`;
-
-            this.getPanes().overlayMouseTarget.appendChild(imageMarker);
-        };
-        overlay.setMap(map);
+       
     }
 
     function createMarkersFromServerData(markers) {
