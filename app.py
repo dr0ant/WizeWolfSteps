@@ -1,27 +1,42 @@
 import json
 import time
 import base64
-from flask import Flask, render_template, jsonify,request,redirect
+from flask import Flask, render_template, jsonify, request, redirect, url_for, session
 from flask_cors import CORS
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_bcrypt import Bcrypt
 from pymongo import MongoClient
+from flask_socketio import SocketIO
 from bson import ObjectId
 from datetime import datetime
-from flask_socketio import SocketIO
-
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
+socketio = SocketIO(app)  # Initialize SocketIO
+app.config['SECRET_KEY'] = 'your_secret_key'  # Change this to a strong, random key
+bcrypt = Bcrypt(app)
 
-socketio = SocketIO(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
 # Connect to MongoDB
 with open('MongoDB/connexion_string.json', 'r') as file:
-        connection_data = json.load(file)
-        #print(connection_data['server'])
+    connection_data = json.load(file)
+
 client = MongoClient(connection_data['server'])
 db = client['Wolf_Steps']
 markers_collection = db['Markers']
+users_collection = db['Profiles']  # Add a new collection for user data
 
+# Define a user class for Flask-Login
+class User(UserMixin):
+    def __init__(self, user_id):
+        self.id = user_id
+
+# User loader function for Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
 
 # Get markers from MongoDB
 @app.route('/get_markers', methods=['GET'])
@@ -32,18 +47,10 @@ def get_markers():
                 return str(obj)
             return json.JSONEncoder.default(self, obj)
 
-    # Connect to MongoDB
-    client = MongoClient(connection_data['server'])
-    db = client['Wolf_Steps']
-    markers_collection = db['Markers']
-
-    # Read all markers from MongoDB
     all_markers = list(markers_collection.find({}, {"_id": 0}))
-
-    # Use the custom encoder when converting to JSON
     return json.dumps(all_markers, cls=MongoEncoder)
 
-
+# Load API key function
 def load_api_key_from_file():
     try:
         with open('ApiKeys/GoogleAPIKEY.json', 'r') as file:
@@ -59,36 +66,83 @@ def index():
 
 @app.route('/get_api_key')
 def get_api_key():
-    # Load the API key data from the file
     api_key_data = load_api_key_from_file()
 
     if api_key_data:
-        print("API Key Data:", api_key_data)  # Add this line for debugging
+        print("API Key Data:", api_key_data)
         return jsonify(api_key_data)
     else:
-        # Return an error response if the file is not found or cannot be read
         return jsonify({'error': 'Unable to load API key data'})
 
+# Registration route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        username = request.form['username']
 
+        # Check if the email is already registered
+        existing_user = users_collection.find_one({'email': email})
+        if existing_user:
+            return render_template('register.html', error='Email already registered')
+
+        # Hash the password before storing it
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        # Create a new user
+        new_user = {
+            'email': email,
+            'password': hashed_password,
+            'username': username
+        }
+        users_collection.insert_one(new_user)
+
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+# Login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        user = users_collection.find_one({'email': email})
+
+        if user and bcrypt.check_password_hash(user['password'], password):
+            user_obj = User(str(user['_id']))
+            login_user(user_obj)
+            return redirect(url_for('index'))
+        else:
+            return render_template('login.html', error='Invalid email or password')
+
+    return render_template('login.html')
+
+# Logout route
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/create_marker', methods=['POST'])
+@login_required
 def create_marker():
-    # Extract form data
     latitude = request.form.get('latitude')
     longitude = request.form.get('longitude')
     image = request.files.get('image')
     sound = request.files.get('sound')
     name = request.form.get('name')
     text = request.form.get('text')
-    user_id = request.form.get('user_id')
+    user_id = current_user.id
 
-  # Encode image and sound files to Base64
     image_data = base64.b64encode(image.read()).decode('utf-8')
     sound_data = base64.b64encode(sound.read()).decode('utf-8')
 
-    # Insert data into MongoDB
     marker_data = {
-        'id':   str(time.time_ns()),
+        'id': str(time.time_ns()),
         'creation_datetime': str(datetime.now()),
         'title': name,
         'label': text,
@@ -96,23 +150,16 @@ def create_marker():
         'image_base64': image_data,
         'sound_base64': sound_data,
         'user_id': user_id,
-        'position':{
-             'latitude': float(latitude),
-             'longitude': float(longitude)
-
+        'position': {
+            'latitude': float(latitude),
+            'longitude': float(longitude)
         }
     }
 
     markers_collection.insert_one(marker_data)
 
-    # Redirect to the root page after successfully creating a marker
-    return render_template('index.html')
+    return redirect(url_for('index'))
 
-@app.route('/log', methods=['POST'])
-def log():
-    data = request.get_json()
-    print('Received log:', data)
-    return 'Log received successfully'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)
